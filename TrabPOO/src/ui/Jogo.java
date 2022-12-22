@@ -83,10 +83,11 @@ public class Jogo {
 				String nomeJogador2 = textField_1.getText();
 				String nomeJogador3 = textField_2.getText();
 				
+				tabbedPane.setSelectedIndex(1);
+				
 				// Chama o método inserirJogadores da classe conexaoBD, passando os valores dos campos de texto como argumentos
 				conexao.criarTabela();
 				conexao.inserirJogadores(nomeJogador1, nomeJogador2, nomeJogador3);
-				conexao.recuperarDados();
 				conexao.fecharConexao();
 			}
 		});

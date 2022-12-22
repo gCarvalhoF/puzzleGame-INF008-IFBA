@@ -81,7 +81,7 @@ public class conexaoBD {
 
 	public void limparHistorico() {
 		try {
-			String query = "DELETE FROM historico WHERE 1=1";
+			String query = "DELETE FROM historico";
 			stmt.executeUpdate(query);
 			atualizarHistorico();
 		} catch (SQLException e) {
