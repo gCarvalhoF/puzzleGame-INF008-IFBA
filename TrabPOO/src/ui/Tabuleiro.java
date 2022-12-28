@@ -11,21 +11,31 @@ public class Tabuleiro extends JPanel {
 	private int[][] board;
 	private JButton[][] buttons;
 
-	public Tabuleiro(int size) {
-		this.board = createBoard(size);
-		this.buttons = new JButton[size][size];
+	public Tabuleiro(int image_selected) {
+		this.board = createBoard(PUZZLE_SIZE);
+		this.buttons = new JButton[PUZZLE_SIZE][PUZZLE_SIZE];
 
-		setLayout(new GridLayout(size, size));
+		setLayout(new GridLayout(PUZZLE_SIZE, PUZZLE_SIZE));
 
-		for (int row = 0; row < size; row++) {
-			for (int col = 0; col < size; col++) {
-				int value = board[row][col];
-				JButton button = new JButton(String.valueOf(value));
-				button.setMargin(new Insets(0, 0, 0, 0));
-				button.addActionListener(new ButtonMover(row, col));
-				add(button);
-				buttons[row][col] = button;
-			}
+		for (int row = 0; row < PUZZLE_SIZE; row++) {
+		    for (int col = 0; col < PUZZLE_SIZE; col++) {
+		        int value = board[row][col];
+		        String str_value = Integer.toString(value);
+		        String str_image_selected = Integer.toString(image_selected);
+		        JButton button = new JButton(String.valueOf(value));
+
+		        // Load the icon image from a file
+		        ImageIcon icon = new ImageIcon("./Images/" + str_image_selected + "/" + str_value + ".png");
+		        
+		        button.setMargin(new Insets(0, 0, 0, 0));
+		        // Set the icon for the button
+		        button.setIcon(icon);
+
+
+		        button.addActionListener(new ButtonMover(row, col));
+		        add(button);
+		        buttons[row][col] = button;
+		    }
 		}
 	}
 
@@ -89,9 +99,6 @@ public class Tabuleiro extends JPanel {
 		private void tryMove(int row, int column, JButton button) {
 			// check if the row and column are within the bounds of the board
 			if (row >= 0 && row < PUZZLE_SIZE && column >= 0 && column < PUZZLE_SIZE) {
-				// get the index of the button at the specified row and column
-				int index = row * PUZZLE_SIZE + column;
-
 				// get the button at the specified row and column
 				JButton otherButton = buttons[row][column];
 
@@ -110,8 +117,12 @@ public class Tabuleiro extends JPanel {
 		// swap the text of the two buttons
 		private void swapButtons(JButton button1, JButton button2) {
 			String text = button1.getText();
+			ImageIcon icon = (ImageIcon) button1.getIcon();
+			
 			button1.setText(button2.getText());
+			button1.setIcon(button2.getIcon());
 			button2.setText(text);
+			button2.setIcon(icon);
 		}
 	}
 }

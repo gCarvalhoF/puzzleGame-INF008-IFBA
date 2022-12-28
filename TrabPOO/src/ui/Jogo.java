@@ -183,7 +183,7 @@ public class Jogo {
 		button_1_1.setBounds(468, 0, 70, 22);
 		panel_1.add(button_1_1);
 		
-		JPanel painel_tabuleiro = new Tabuleiro(4);
+		JPanel painel_tabuleiro = new Tabuleiro(3);
 		painel_tabuleiro.setBounds(0, 28, 544, 319);
 		panel_1.add(painel_tabuleiro);
 	}
