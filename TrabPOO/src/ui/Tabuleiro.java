@@ -56,7 +56,7 @@ public class Tabuleiro extends JPanel {
 		for (int row = 0; row < board.length; row++) {
 			for (int col = 0; col < board[row].length; col++) {
 				int value = board[row][col];
-				
+								
 				ImageIcon icon = new ImageIcon("./Images/" + this.image_selected + "/" + Integer.toString(value) + ".png");
 		        Image scaled_icon = icon.getImage().getScaledInstance(146, 82, java.awt.Image.SCALE_SMOOTH);
 		        icon = new ImageIcon(scaled_icon);
@@ -94,6 +94,19 @@ public class Tabuleiro extends JPanel {
 	    // Set the board field of the Tabuleiro class to the new shuffled board
 	    setBoard(shuffledBoard);
 	}
+	
+	public boolean checkWin() {
+	    int[][] solvedBoard = createBoard(PUZZLE_SIZE, true);
+	    for (int row = 0; row < PUZZLE_SIZE; row++) {
+	        for (int col = 0; col < PUZZLE_SIZE; col++) {
+	        	if (solvedBoard[row][col] != board[row][col]) {
+	        		return false;
+	        	}
+	        }
+	    }
+	    return true;
+	}
+
 
 	private class ButtonMover implements ActionListener {
 		private int row;
@@ -114,23 +127,28 @@ public class Tabuleiro extends JPanel {
 			tryMove(row, col + 1, button);
 			tryMove(row - 1, col, button);
 			tryMove(row + 1, col, button);
+			
+			if (checkWin()) {
+			    JOptionPane.showMessageDialog(null, "Congratulations! You have won the game!");
+			    return;
+			}
 		}
 
 		// try to move the button to the specified row and column
-		private void tryMove(int row, int column, JButton button) {
+		private void tryMove(int tryRow, int tryColumn, JButton button) {
 			// check if the row and column are within the bounds of the board
-			if (row >= 0 && row < PUZZLE_SIZE && column >= 0 && column < PUZZLE_SIZE) {
+			if (tryRow >= 0 && tryRow < PUZZLE_SIZE && tryColumn >= 0 && tryColumn < PUZZLE_SIZE) {
 				// get the button at the specified row and column
-				JButton otherButton = buttons[row][column];
-
+				JButton otherButton = buttons[tryRow][tryColumn];
+				
 				// check if the button is blank
 				if (otherButton.getText().equals("0")) {
 					// swap the buttons
-					swapButtons(button, otherButton);
+					swapButtons(button, otherButton);				
 
 					// update the board
 					board[this.row][this.col] = 0;
-					board[row][column] = Integer.parseInt(button.getText());
+					board[tryRow][tryColumn] = Integer.parseInt(otherButton.getText());
 				}
 			}
 		}
@@ -143,7 +161,7 @@ public class Tabuleiro extends JPanel {
 			button1.setText(button2.getText());
 			button1.setIcon(button2.getIcon());
 			button2.setText(text);
-			button2.setIcon(icon);
+			button2.setIcon(icon);			
 		}
 	}
 }
