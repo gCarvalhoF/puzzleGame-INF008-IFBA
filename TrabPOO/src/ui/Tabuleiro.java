@@ -10,9 +10,10 @@ public class Tabuleiro extends JPanel {
 	private static final int PUZZLE_SIZE = 4;
 	private int[][] board;
 	private JButton[][] buttons;
+	private String image_selected;
 
 	public Tabuleiro(int image_selected, boolean isSolved) {
-		this.board = createBoard(PUZZLE_SIZE, true);
+		this.board = createBoard(PUZZLE_SIZE, isSolved);
 		this.buttons = new JButton[PUZZLE_SIZE][PUZZLE_SIZE];
 
 		setLayout(new GridLayout(PUZZLE_SIZE, PUZZLE_SIZE));
@@ -21,11 +22,11 @@ public class Tabuleiro extends JPanel {
 		    for (int col = 0; col < PUZZLE_SIZE; col++) {
 		        int value = board[row][col];
 		        String str_value = Integer.toString(value);
-		        String str_image_selected = Integer.toString(image_selected);
+		        this.image_selected = Integer.toString(image_selected);
 		        JButton button = new JButton(String.valueOf(value));
 		        
 		        // Load the icon image from a file
-		        ImageIcon icon = new ImageIcon("./Images/" + str_image_selected + "/" + str_value + ".png");
+		        ImageIcon icon = new ImageIcon("./Images/" + image_selected + "/" + str_value + ".png");
 		        Image scaled_icon = icon.getImage().getScaledInstance(146, 82, java.awt.Image.SCALE_SMOOTH);
 		        icon = new ImageIcon(scaled_icon); 
 
@@ -55,7 +56,13 @@ public class Tabuleiro extends JPanel {
 		for (int row = 0; row < board.length; row++) {
 			for (int col = 0; col < board[row].length; col++) {
 				int value = board[row][col];
-				buttons[row][col].setText(String.valueOf(value));
+				
+				ImageIcon icon = new ImageIcon("./Images/" + this.image_selected + "/" + Integer.toString(value) + ".png");
+		        Image scaled_icon = icon.getImage().getScaledInstance(146, 82, java.awt.Image.SCALE_SMOOTH);
+		        icon = new ImageIcon(scaled_icon);
+		        
+		        buttons[row][col].setText(String.valueOf(value));
+		        buttons[row][col].setIcon(icon);
 			}
 		}
 	}
@@ -79,6 +86,14 @@ public class Tabuleiro extends JPanel {
 		}
 		return board;
 	}
+	
+	public void shuffleBoard() {
+	    // Create a new shuffled board using the createBoard() method
+	    int[][] shuffledBoard = createBoard(PUZZLE_SIZE, false);
+
+	    // Set the board field of the Tabuleiro class to the new shuffled board
+	    setBoard(shuffledBoard);
+	}
 
 	private class ButtonMover implements ActionListener {
 		private int row;
@@ -93,7 +108,7 @@ public class Tabuleiro extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			// get the button that was clicked
 			JButton button = (JButton) e.getSource();
-
+			
 			// try to move the button to the left, right, up, or down
 			tryMove(row, col - 1, button);
 			tryMove(row, col + 1, button);

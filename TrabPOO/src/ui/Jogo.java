@@ -240,7 +240,7 @@ public class Jogo {
 				String nomeJogador2 = txtJogador2.getText();
 				String nomeJogador3 = txtJogador3.getText();
 				
-				JPanel painel_tabuleiro = new Tabuleiro(numero, false);
+				JPanel painel_tabuleiro = new Tabuleiro(numero, true);
 				painel_tabuleiro.setBounds(0, 28, 544, 319);
 				panel_1.add(painel_tabuleiro);
 				
