@@ -11,8 +11,8 @@ public class Tabuleiro extends JPanel {
 	private int[][] board;
 	private JButton[][] buttons;
 
-	public Tabuleiro(int image_selected) {
-		this.board = createBoard(PUZZLE_SIZE);
+	public Tabuleiro(int image_selected, boolean isSolved) {
+		this.board = createBoard(PUZZLE_SIZE, true);
 		this.buttons = new JButton[PUZZLE_SIZE][PUZZLE_SIZE];
 
 		setLayout(new GridLayout(PUZZLE_SIZE, PUZZLE_SIZE));
@@ -23,9 +23,12 @@ public class Tabuleiro extends JPanel {
 		        String str_value = Integer.toString(value);
 		        String str_image_selected = Integer.toString(image_selected);
 		        JButton button = new JButton(String.valueOf(value));
-
+		        
 		        // Load the icon image from a file
 		        ImageIcon icon = new ImageIcon("./Images/" + str_image_selected + "/" + str_value + ".png");
+		        Image scaled_icon = icon.getImage().getScaledInstance(146, 82, java.awt.Image.SCALE_SMOOTH);
+		        icon = new ImageIcon(scaled_icon); 
+
 		        
 		        button.setMargin(new Insets(0, 0, 0, 0));
 		        // Set the icon for the button
@@ -57,13 +60,16 @@ public class Tabuleiro extends JPanel {
 		}
 	}
 
-	private int[][] createBoard(int size) {
+	private int[][] createBoard(int size, boolean isSolved) {
 		ArrayList<Integer> values = new ArrayList<>();
 		for (int i = 1; i < size * size; i++) {
 			values.add(i);
 		}
 		values.add(0);
-		Collections.shuffle(values);
+		
+		if(!isSolved) {
+			Collections.shuffle(values);			
+		}
 
 		int[][] board = new int[size][size];
 		for (int i = 0; i < size; i++) {

@@ -164,8 +164,6 @@ public class Jogo {
 		tabbedPane.addTab("JOGO", null, panel_1, null);
 		panel_1.setLayout(null);
 		
-		
-		
 		JLabel lblNewLabel_1 = new JLabel("Jogador Atual:");
 		lblNewLabel_1.setBounds(10, 6, 98, 14);
 		panel_1.add(lblNewLabel_1);
@@ -242,7 +240,7 @@ public class Jogo {
 				String nomeJogador2 = txtJogador2.getText();
 				String nomeJogador3 = txtJogador3.getText();
 				
-				JPanel painel_tabuleiro = new Tabuleiro(numero);
+				JPanel painel_tabuleiro = new Tabuleiro(numero, false);
 				painel_tabuleiro.setBounds(0, 28, 544, 319);
 				panel_1.add(painel_tabuleiro);
 				
@@ -255,7 +253,7 @@ public class Jogo {
 				//Nome Jogador1
 				lbJogadorAtual.setText(txtJogador1.getText());
 				
-				ImageIcon icon = new ImageIcon(new ImageIcon("C:/Users/Lucas/Desktop/FotosTrabPOO/" + numero + ".png").
+				ImageIcon icon = new ImageIcon(new ImageIcon("./Images/" + numero + ".png").
 						getImage().getScaledInstance(190, 190, Image.SCALE_DEFAULT));
 				lbImgCompleta.setIcon(icon);
 				
