@@ -190,6 +190,7 @@ public class Jogo {
 		while(numero == 0) {
 			numero = random.nextInt(4);
 		}
+		
 
 		Tabuleiro painel_tabuleiro = new Tabuleiro(numero, true);
 		painel_tabuleiro.setBounds(0, 28, 544, 319);
@@ -199,13 +200,14 @@ public class Jogo {
 		lbImgCompleta.setBounds(559, 6, 186, 187);
 		panel_1.add(lbImgCompleta);
 		
-		Cronometro painel_cronometro = new Cronometro((Tabuleiro) painel_tabuleiro, this);
-		painel_cronometro.setBounds(650, 28, 544, 319);
-		panel_1.add(painel_cronometro);
 		
 		JLabel lblNewLabel_1 = new JLabel("Jogador Atual:");
 		lblNewLabel_1.setBounds(10, 6, 98, 14);
 		panel_1.add(lblNewLabel_1);
+		
+		Cronometro painel_cronometro = new Cronometro((Tabuleiro) painel_tabuleiro, this);
+		painel_cronometro.setBounds(650, 28, 544, 319);
+		panel_1.add(painel_cronometro);
 		
 		JLabel lbJogadorAtual = new JLabel();
 		lbJogadorAtual.setFont(new Font("Arial Black", Font.BOLD, 12));
@@ -219,6 +221,9 @@ public class Jogo {
 			public void actionPerformed(ActionEvent e) {
 				if(rdBtManoelGomes.isSelected()) {
 					painel_tabuleiro.switchImage(1);
+					ImageIcon icon = new ImageIcon(new ImageIcon("./Images/" + 1 + ".png").
+							getImage().getScaledInstance(190, 190, Image.SCALE_DEFAULT));
+					lbImgCompleta.setIcon(icon);
 				}
 			}
 		});
@@ -232,6 +237,9 @@ public class Jogo {
 			public void actionPerformed(ActionEvent e) {
 				if(rdBtOrochi.isSelected()) {
 					painel_tabuleiro.switchImage(2);
+					ImageIcon icon = new ImageIcon(new ImageIcon("./Images/" + 2 + ".png").
+							getImage().getScaledInstance(190, 190, Image.SCALE_DEFAULT));
+					lbImgCompleta.setIcon(icon);
 				}
 			}
 		});
@@ -245,6 +253,9 @@ public class Jogo {
 			public void actionPerformed(ActionEvent e) {
 				if(rdBtFenda.isSelected()) {
 					painel_tabuleiro.switchImage(3);
+					ImageIcon icon = new ImageIcon(new ImageIcon("./Images/" + 3 + ".png").
+							getImage().getScaledInstance(190, 190, Image.SCALE_DEFAULT));
+					lbImgCompleta.setIcon(icon);
 				}
 			}
 		});
@@ -294,8 +305,6 @@ public class Jogo {
 			public void actionPerformed(ActionEvent e) {
 				painel_cronometro.stop();
 				painel_tabuleiro.solveBoard();
-//				painel_cronometro.startButton.setEnabled(false);
-//				btAutoResolve.setEnabled(false);
 			}
 		});
 		btAutoResolve.setFont(new Font("Arial", Font.PLAIN, 13));

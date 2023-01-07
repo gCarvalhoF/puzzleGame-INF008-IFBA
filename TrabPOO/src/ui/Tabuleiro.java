@@ -11,6 +11,7 @@ public class Tabuleiro extends JPanel {
 	private int[][] board;
 	private JButton[][] buttons;
 	public String image_selected;
+	private boolean enableMovement = true;
 
 	public Tabuleiro(int image_selected, boolean isSolved) {
 		this.board = createBoard(PUZZLE_SIZE, isSolved);
@@ -109,6 +110,10 @@ public class Tabuleiro extends JPanel {
 		// Set the board field of the Tabuleiro class to the new shuffled board
 		updateButtons();
 	}
+	
+	public void setEnableMovement(boolean test) {
+		this.enableMovement = test;
+	}
 
 	public boolean checkWin() {
 		int[][] solvedBoard = createBoard(PUZZLE_SIZE, true);
@@ -137,14 +142,20 @@ public class Tabuleiro extends JPanel {
 			JButton button = (JButton) e.getSource();
 
 			// try to move the button to the left, right, up, or down
-			tryMove(row, col - 1, button);
-			tryMove(row, col + 1, button);
-			tryMove(row - 1, col, button);
-			tryMove(row + 1, col, button);
-
-			if (checkWin()) {
-				JOptionPane.showMessageDialog(null, "Parabéns! Você venceu o jogo!");
-				return;
+			
+			if (enableMovement) {
+				if (checkWin()) {
+					JOptionPane.showMessageDialog(null, "Parabéns! Você venceu o jogo!");
+					return;
+				}
+				
+				tryMove(row, col - 1, button);
+				tryMove(row, col + 1, button);
+				tryMove(row - 1, col, button);
+				tryMove(row + 1, col, button);				
+			}
+			else {
+				JOptionPane.showMessageDialog(null, "O jogo está pausado, retome a partida para poder mover as peças!");
 			}
 		}
 

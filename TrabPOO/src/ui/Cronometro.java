@@ -68,11 +68,15 @@ public class Cronometro extends JPanel implements ActionListener{
 
 	 if(started==false) {
 	 started=true;
+	 this.tabuleiro.setEnableMovement(started);
+	 
 	 startButton.setText("PAUSAR");
 	 start();
 	 }
 	 else {
 	 started=false;
+	 this.tabuleiro.setEnableMovement(started);
+	 
 	 startButton.setText("COMEÇAR");
 	 stop();
 	 }
