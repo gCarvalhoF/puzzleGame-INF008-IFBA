@@ -10,7 +10,7 @@ public class Tabuleiro extends JPanel {
 	private static final int PUZZLE_SIZE = 4;
 	private int[][] board;
 	private JButton[][] buttons;
-	private String image_selected;
+	public String image_selected;
 
 	public Tabuleiro(int image_selected, boolean isSolved) {
 		this.board = createBoard(PUZZLE_SIZE, isSolved);
@@ -19,27 +19,25 @@ public class Tabuleiro extends JPanel {
 		setLayout(new GridLayout(PUZZLE_SIZE, PUZZLE_SIZE));
 
 		for (int row = 0; row < PUZZLE_SIZE; row++) {
-		    for (int col = 0; col < PUZZLE_SIZE; col++) {
-		        int value = board[row][col];
-		        String str_value = Integer.toString(value);
-		        this.image_selected = Integer.toString(image_selected);
-		        JButton button = new JButton(String.valueOf(value));
-		        
-		        // Load the icon image from a file
-		        ImageIcon icon = new ImageIcon("./Images/" + image_selected + "/" + str_value + ".png");
-		        Image scaled_icon = icon.getImage().getScaledInstance(146, 82, java.awt.Image.SCALE_SMOOTH);
-		        icon = new ImageIcon(scaled_icon); 
+			for (int col = 0; col < PUZZLE_SIZE; col++) {
+				int value = board[row][col];
+				String str_value = Integer.toString(value);
+				this.image_selected = Integer.toString(image_selected);
+				JButton button = new JButton(String.valueOf(value));
 
-		        
-		        button.setMargin(new Insets(0, 0, 0, 0));
-		        // Set the icon for the button
-		        button.setIcon(icon);
+				// Load the icon image from a file
+				ImageIcon icon = new ImageIcon("./Images/" + image_selected + "/" + str_value + ".png");
+				Image scaled_icon = icon.getImage().getScaledInstance(146, 82, java.awt.Image.SCALE_SMOOTH);
+				icon = new ImageIcon(scaled_icon);
 
+				button.setMargin(new Insets(0, 0, 0, 0));
+				// Set the icon for the button
+				button.setIcon(icon);
 
-		        button.addActionListener(new ButtonMover(row, col));
-		        add(button);
-		        buttons[row][col] = button;
-		    }
+				button.addActionListener(new ButtonMover(row, col));
+				add(button);
+				buttons[row][col] = button;
+			}
 		}
 	}
 
@@ -56,13 +54,14 @@ public class Tabuleiro extends JPanel {
 		for (int row = 0; row < board.length; row++) {
 			for (int col = 0; col < board[row].length; col++) {
 				int value = board[row][col];
-								
-				ImageIcon icon = new ImageIcon("./Images/" + this.image_selected + "/" + Integer.toString(value) + ".png");
-		        Image scaled_icon = icon.getImage().getScaledInstance(146, 82, java.awt.Image.SCALE_SMOOTH);
-		        icon = new ImageIcon(scaled_icon);
-		        
-		        buttons[row][col].setText(String.valueOf(value));
-		        buttons[row][col].setIcon(icon);
+
+				ImageIcon icon = new ImageIcon(
+						"./Images/" + this.image_selected + "/" + Integer.toString(value) + ".png");
+				Image scaled_icon = icon.getImage().getScaledInstance(146, 82, java.awt.Image.SCALE_SMOOTH);
+				icon = new ImageIcon(scaled_icon);
+
+				buttons[row][col].setText(String.valueOf(value));
+				buttons[row][col].setIcon(icon);
 			}
 		}
 	}
@@ -73,9 +72,9 @@ public class Tabuleiro extends JPanel {
 			values.add(i);
 		}
 		values.add(0);
-		
-		if(!isSolved) {
-			Collections.shuffle(values);			
+
+		if (!isSolved) {
+			Collections.shuffle(values);
 		}
 
 		int[][] board = new int[size][size];
@@ -86,27 +85,42 @@ public class Tabuleiro extends JPanel {
 		}
 		return board;
 	}
-	
+
 	public void shuffleBoard() {
-	    // Create a new shuffled board using the createBoard() method
-	    int[][] shuffledBoard = createBoard(PUZZLE_SIZE, false);
+		// Create a new shuffled board using the createBoard() method
+		int[][] shuffledBoard = createBoard(PUZZLE_SIZE, false);
 
-	    // Set the board field of the Tabuleiro class to the new shuffled board
-	    setBoard(shuffledBoard);
+		// Set the board field of the Tabuleiro class to the new shuffled board
+		setBoard(shuffledBoard);
 	}
 	
-	public boolean checkWin() {
-	    int[][] solvedBoard = createBoard(PUZZLE_SIZE, true);
-	    for (int row = 0; row < PUZZLE_SIZE; row++) {
-	        for (int col = 0; col < PUZZLE_SIZE; col++) {
-	        	if (solvedBoard[row][col] != board[row][col]) {
-	        		return false;
-	        	}
-	        }
-	    }
-	    return true;
+	public void solveBoard() {
+		// Create a new shuffled board using the createBoard() method
+		int[][] solvedBoard = createBoard(PUZZLE_SIZE, true);
+
+		// Set the board field of the Tabuleiro class to the new shuffled board
+		setBoard(solvedBoard);
+	}
+	
+	public void switchImage(int newImage) {
+		// Create a new shuffled board using the createBoard() method
+		this.image_selected = Integer.toString(newImage);
+
+		// Set the board field of the Tabuleiro class to the new shuffled board
+		updateButtons();
 	}
 
+	public boolean checkWin() {
+		int[][] solvedBoard = createBoard(PUZZLE_SIZE, true);
+		for (int row = 0; row < PUZZLE_SIZE; row++) {
+			for (int col = 0; col < PUZZLE_SIZE; col++) {
+				if (solvedBoard[row][col] != board[row][col]) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
 	private class ButtonMover implements ActionListener {
 		private int row;
@@ -121,16 +135,16 @@ public class Tabuleiro extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			// get the button that was clicked
 			JButton button = (JButton) e.getSource();
-			
+
 			// try to move the button to the left, right, up, or down
 			tryMove(row, col - 1, button);
 			tryMove(row, col + 1, button);
 			tryMove(row - 1, col, button);
 			tryMove(row + 1, col, button);
-			
+
 			if (checkWin()) {
-			    JOptionPane.showMessageDialog(null, "Congratulations! You have won the game!");
-			    return;
+				JOptionPane.showMessageDialog(null, "Parabéns! Você venceu o jogo!");
+				return;
 			}
 		}
 
@@ -140,11 +154,11 @@ public class Tabuleiro extends JPanel {
 			if (tryRow >= 0 && tryRow < PUZZLE_SIZE && tryColumn >= 0 && tryColumn < PUZZLE_SIZE) {
 				// get the button at the specified row and column
 				JButton otherButton = buttons[tryRow][tryColumn];
-				
+
 				// check if the button is blank
 				if (otherButton.getText().equals("0")) {
 					// swap the buttons
-					swapButtons(button, otherButton);				
+					swapButtons(button, otherButton);
 
 					// update the board
 					board[this.row][this.col] = 0;
@@ -157,11 +171,11 @@ public class Tabuleiro extends JPanel {
 		private void swapButtons(JButton button1, JButton button2) {
 			String text = button1.getText();
 			ImageIcon icon = (ImageIcon) button1.getIcon();
-			
+
 			button1.setText(button2.getText());
 			button1.setIcon(button2.getIcon());
 			button2.setText(text);
-			button2.setIcon(icon);			
+			button2.setIcon(icon);
 		}
 	}
 }

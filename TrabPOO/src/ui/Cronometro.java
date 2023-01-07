@@ -6,7 +6,7 @@ import javax.swing.*;
 
 public class Cronometro extends JPanel implements ActionListener{
  
- JFrame frame = new JFrame();
+ JPanel panel = new JPanel();
  JButton startButton = new JButton("PAUSAR");
  JButton resetButton = new JButton("REINICIAR");
  JLabel timeLabel = new JLabel();
@@ -16,6 +16,8 @@ public class Cronometro extends JPanel implements ActionListener{
  boolean started = true;
  String seconds_string = String.format("%02d", seconds);
  String minutes_string = String.format("%02d", minutes);
+ Tabuleiro tabuleiro;
+ Jogo jogo;
  
  Timer timer = new Timer(1000, new ActionListener() {
   
@@ -33,77 +35,75 @@ public class Cronometro extends JPanel implements ActionListener{
  });
  
  
- Cronometro(){
-  start();
-  
+ public Cronometro(Tabuleiro tabuleiro, Jogo jogo){  
+  timeLabel.setBounds(124,100,219,45);
   timeLabel.setText(minutes_string+":"+seconds_string);
-  timeLabel.setBounds(10,11,165,100);
   timeLabel.setFont(new Font("Arial",Font.BOLD,35));
   timeLabel.setBorder(BorderFactory.createBevelBorder(1));
   timeLabel.setOpaque(true);
   timeLabel.setHorizontalAlignment(JTextField.CENTER);
   
-  startButton.setBounds(10,111,165,50);
-  startButton.setFont(new Font("Arial",Font.PLAIN,20));
+  startButton.setBounds(124,156,109,33);
+  startButton.setFont(new Font("Arial", Font.PLAIN, 15));
   startButton.setFocusable(false);
   startButton.addActionListener(this);
   
-  resetButton.setBounds(10,161,165,50);
-  resetButton.setFont(new Font("Arial",Font.PLAIN,20));
+  resetButton.setBounds(234,156,109,33);
+  resetButton.setFont(new Font("Arial", Font.PLAIN, 15));
   resetButton.setFocusable(false);
   resetButton.addActionListener(this);
+  setLayout(null);
   
-  frame.getContentPane().add(startButton);
-  frame.getContentPane().add(resetButton);
-  frame.getContentPane().add(timeLabel);
+  this.tabuleiro = tabuleiro;
+  this.jogo = jogo;
   
-  frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-  frame.setSize(203,250);
-  frame.getContentPane().setLayout(null);
-  frame.setVisible(true);
+  add(startButton);
+  add(resetButton);
+  add(timeLabel);
  }
  
- @Override
  public void actionPerformed(ActionEvent e) {
-  
-  if(e.getSource()==startButton) {
-   
-   if(started==false) {
-    started=true;
-    startButton.setText("PAUSAR");
-    start();
-   }
-   else {
-    started=false;
-    startButton.setText("COMEÇAR");
-    stop();
-   }
-   
-  }
-  if(e.getSource()==resetButton) {
-   started=false;
-   startButton.setText("COMEÇAR");
-   reset();
-  }
-  
- }
- 
- void start() {
-  timer.start();
- }
- 
- void stop() {
-  timer.stop();
- }
- 
- void reset() {
-  timer.stop();
-  elapsedTime=0;
-  seconds =0;
-  minutes=0;
-  seconds_string = String.format("%02d", seconds);
-  minutes_string = String.format("%02d", minutes);
-  timeLabel.setText(minutes_string+":"+seconds_string);
- }
 
-}
+	 if(e.getSource()==startButton) {
+
+	 if(started==false) {
+	 started=true;
+	 startButton.setText("PAUSAR");
+	 start();
+	 }
+	 else {
+	 started=false;
+	 startButton.setText("COMEÇAR");
+	 stop();
+	 }
+
+	 }
+	 if(e.getSource()==resetButton) {
+	 started=false;
+	 startButton.setText("COMEÇAR");
+	 reset();
+	 }
+
+	 }
+
+	 void start() {
+	 timer.start();
+	 }
+
+	 void stop() {
+	 timer.stop();
+	 }
+
+	 void reset() {
+	 timer.stop();
+	 elapsedTime=0;
+	 seconds =0;
+	 minutes=0;
+	 seconds_string = String.format("%02d", seconds);
+	 minutes_string = String.format("%02d", minutes);
+	 timeLabel.setText(minutes_string+":"+seconds_string);
+	 
+	 this.tabuleiro.shuffleBoard();
+	 }
+
+	 }
