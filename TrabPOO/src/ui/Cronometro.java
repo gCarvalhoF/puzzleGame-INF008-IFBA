@@ -17,7 +17,6 @@ public class Cronometro extends JPanel implements ActionListener{
  String seconds_string = String.format("%02d", seconds);
  String minutes_string = String.format("%02d", minutes);
  Tabuleiro tabuleiro;
- Jogo jogo;
  
  Timer timer = new Timer(1000, new ActionListener() {
   
@@ -35,7 +34,7 @@ public class Cronometro extends JPanel implements ActionListener{
  });
  
  
- public Cronometro(Tabuleiro tabuleiro, Jogo jogo){  
+ public Cronometro(Tabuleiro tabuleiro){  
   timeLabel.setBounds(124,100,219,45);
   timeLabel.setText(minutes_string+":"+seconds_string);
   timeLabel.setFont(new Font("Arial",Font.BOLD,35));
@@ -55,7 +54,6 @@ public class Cronometro extends JPanel implements ActionListener{
   setLayout(null);
   
   this.tabuleiro = tabuleiro;
-  this.jogo = jogo;
   
   add(startButton);
   add(resetButton);

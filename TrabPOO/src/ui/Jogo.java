@@ -8,6 +8,8 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
 import Bd.conexaoBD;
+import negocio.Jogador;
+import negocio.Partida;
 
 import java.awt.Font;
 import java.awt.Image;
@@ -33,6 +35,7 @@ import java.sql.Statement;
 import java.awt.event.ActionEvent;
 import javax.swing.UIManager;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javax.swing.BorderFactory;
@@ -198,8 +201,44 @@ public class Jogo {
 			numero = random.nextInt(4);
 		}
 		
+		JButton btnNewButton = new JButton("Jogar");
+		ArrayList<Jogador> jogadores = new ArrayList<Jogador>();
+		
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				conexaoBD banco = new conexaoBD();
+				banco.criarTabelaTabuleiro();
+				
+				// Cria uma instância da classe conexaoBD
+				conexaoBD conexao = new conexaoBD();
+				
+				// Obtém os valores dos campos de texto
+				Jogador jogador1 = new Jogador(txtJogador1.getText());
+				Jogador jogador2 = new Jogador(txtJogador2.getText());
+				Jogador jogador3 = new Jogador(txtJogador3.getText());
+				
+				jogadores.add(jogador1);
+				jogadores.add(jogador2);
+				jogadores.add(jogador3);
+							
+				tabbedPane.setSelectedIndex(1);
+				
+				// Chama o método inserirJogadores da classe conexaoBD, passando os valores dos campos de texto como argumentos
+				conexao.criarTabela();
+				conexao.inserirJogadores(jogador1.getNome(), jogador2.getNome(), jogador3.getNome());
+				conexao.fecharConexao();
+			}
+		});
+		
+		Partida partida = new Partida(jogadores, numero);
 
-		Tabuleiro painel_tabuleiro = new Tabuleiro(numero, true);
+
+		btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 22));
+		btnNewButton.setBounds(413, 223, 206, 51);
+		panel.add(btnNewButton);
+
+		Tabuleiro painel_tabuleiro = partida.tabuleiro;
 		painel_tabuleiro.setBounds(0, 28, 544, 319);
 		panel_1.add(painel_tabuleiro);
 		
@@ -212,7 +251,7 @@ public class Jogo {
 		lblNewLabel_1.setBounds(10, 6, 98, 14);
 		panel_1.add(lblNewLabel_1);
 		
-		Cronometro painel_cronometro = new Cronometro((Tabuleiro) painel_tabuleiro, this);
+		Cronometro painel_cronometro = partida.cronometro;
 		painel_cronometro.setBounds(650, 28, 544, 319);
 		panel_1.add(painel_cronometro);
 		
@@ -322,39 +361,7 @@ public class Jogo {
 				getImage().getScaledInstance(190, 190, Image.SCALE_DEFAULT));
 		lbImgCompleta.setIcon(icon);
 		
-		JButton btnNewButton = new JButton("Jogar");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				conexaoBD banco = new conexaoBD();
-				banco.criarTabelaTabuleiro();
-				
-				// Cria uma instância da classe conexaoBD
-				conexaoBD conexao = new conexaoBD();
-				
-				// Obtém os valores dos campos de texto
-				String nomeJogador1 = txtJogador1.getText();
-				String nomeJogador2 = txtJogador2.getText();
-				String nomeJogador3 = txtJogador3.getText();
-								
-				((Tabuleiro) painel_tabuleiro).shuffleBoard();
-				tabbedPane.setSelectedIndex(1);
-				painel_cronometro.start();
-				
-				//Nome Jogador1
-				lbJogadorAtual.setText(txtJogador1.getText());
-								
-				// Chama o método inserirJogadores da classe conexaoBD, passando os valores dos campos de texto como argumentos
-				conexao.criarTabela();
-				conexao.inserirJogadores(nomeJogador1, nomeJogador2, nomeJogador3);
-				conexao.fecharConexao();
-			}
-		});
-
-
-		btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 22));
-		btnNewButton.setBounds(413, 223, 206, 51);
-		panel.add(btnNewButton);
+		
 		
 		JLabel lbBG = new JLabel("");
 		ImageIcon icon3 = new ImageIcon(new ImageIcon("./Images/4.png").

@@ -9,14 +9,8 @@ public class Jogador {
   
   List<Jogador> jogadores = new ArrayList<>();
 
-  public Jogador(String nome, int pontuacao) {
+  public Jogador(String nome) {
     this.nome = nome;
-    this.pontuacao = pontuacao;
-    jogadores.add(this);
-  }
-
-  public void adicionarJogador(Jogador jogador) {
-    jogadores.add(jogador);
   }
 
   public String getNome() {
@@ -25,6 +19,19 @@ public class Jogador {
 
   public void setNome(String nome) {
     this.nome = nome;
+  }
+  
+  public void calcularPontuacao(int tempo) {
+	  
+	 if (tempo <= 60) {
+		this.setPontuacao(tempo * (50 / 3));
+	 }
+	 else if (tempo <= 600) {
+		 this.setPontuacao(tempo * 6);
+	 }
+	 else {
+		 this.setPontuacao(tempo * (1 / 600));
+	 }
   }
 
   public int getPontuacao() {
