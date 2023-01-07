@@ -130,6 +130,13 @@ public class Jogo {
 		txtJogador1.setBounds(476, 82, 143, 20);
 		panel.add(txtJogador1);
 		
+		JLabel lbImageTitulo = new JLabel("");
+		ImageIcon icon2 = new ImageIcon(new ImageIcon("./Images/Title.png").
+				getImage().getScaledInstance(400, 91, Image.SCALE_DEFAULT));
+		lbImageTitulo.setIcon(icon2);
+		lbImageTitulo.setBounds(314, 0, 400, 90);
+		panel.add(lbImageTitulo);
+		
 		JLabel lbTitulo = new JLabel("MENU INICIAL");
 		lbTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		lbTitulo.setFont(new Font("Tahoma", Font.BOLD, 21));
@@ -347,7 +354,21 @@ public class Jogo {
 
 		btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 22));
 		btnNewButton.setBounds(413, 223, 206, 51);
-		panel.add(btnNewButton);		
+		panel.add(btnNewButton);
+		
+		JLabel lbBG = new JLabel("");
+		ImageIcon icon3 = new ImageIcon(new ImageIcon("./Images/4.png").
+				getImage().getScaledInstance(1034, 300, Image.SCALE_DEFAULT));
+		lbBG.setIcon(icon3);
+		lbBG.setBounds(0, 55, 1034, 284);
+		panel.add(lbBG);
+		
+		JLabel lbBG2 = new JLabel("");
+		ImageIcon icon4 = new ImageIcon(new ImageIcon("./Images/5.png").
+				getImage().getScaledInstance(145, 132, Image.SCALE_DEFAULT));
+		lbBG2.setIcon(icon4);
+		lbBG2.setBounds(732, -35, 180, 156);
+		panel.add(lbBG2);
 	}
 }
 
