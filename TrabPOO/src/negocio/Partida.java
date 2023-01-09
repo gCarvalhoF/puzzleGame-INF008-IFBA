@@ -13,7 +13,7 @@ public class Partida {
 	public Cronometro cronometro;
 	private int id;
 	private int currentPlayer = -1;
-	private int[][] tabuleiroInicial;
+	private float pontuacao;
 
 	public Partida(ArrayList<Jogador> jogadores, int image_selected) {
 		iniciarPartida(jogadores, image_selected);
@@ -36,21 +36,47 @@ public class Partida {
 		this.id = conexao.getIdUltimoRegistroPartida() + 1;
 	}
 
-	void checkWin() {
+	public boolean checkWin() {
 		if (!tabuleiro.checkWin()) {
 			cronometro.setVisibilityStart(true);
+			return true;
 		} else {
 			cronometro.stop();
 			cronometro.setVisibilityStart(false);
+			return false;
 		}
 	}
 
 	public int getCurrentPlayer() {
-		setCurrentPlayer(currentPlayer + 1);
 		return currentPlayer;
 	}
 
+	public int incrementCurrentPlayer() {
+		setCurrentPlayer(currentPlayer + 1);
+		return currentPlayer;
+	}
+	
 	public void setCurrentPlayer(int currentPlayer) {
 		this.currentPlayer = currentPlayer;
 	}
+
+	public float calcularPontuacao(float tempo) {
+		if (tempo <= 60) {
+			this.setPontuacao(tempo * (50.0f / 3.0f));
+		} else if (tempo <= 600) {
+			this.setPontuacao(tempo * 6);
+		} else {
+			this.setPontuacao(tempo * (1.0f / 600.0f));
+		}
+		return getPontuacao();
+	}
+
+	public float getPontuacao() {
+		return pontuacao;
+	}
+
+	public void setPontuacao(float pontuacao) {
+		this.pontuacao = pontuacao;
+	}
+
 }

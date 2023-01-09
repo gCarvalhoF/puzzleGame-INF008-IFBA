@@ -13,9 +13,11 @@ public class Tabuleiro extends JPanel {
 	private JButton[][] buttons;
 	public String image_selected;
 	private boolean enableMovement = true;
+	private int[][] tabuleiroInicial;
 
 	public Tabuleiro(int image_selected, boolean isSolved) {
 		this.board = createBoard(PUZZLE_SIZE, isSolved);
+		this.tabuleiroInicial = board;
 		this.buttons = new JButton[PUZZLE_SIZE][PUZZLE_SIZE];
 
 		setLayout(new GridLayout(PUZZLE_SIZE, PUZZLE_SIZE));
@@ -42,7 +44,7 @@ public class Tabuleiro extends JPanel {
 			}
 		}
 	}
-	
+
 	public int[][] getBoard() {
 		return board;
 	}
@@ -204,5 +206,12 @@ public class Tabuleiro extends JPanel {
 			button2.setText(text);
 			button2.setIcon(icon);
 		}
+		
 	}
+
+	public int[][] getTabuleiroInicial() {
+		return tabuleiroInicial;
+	}
+
+
 }

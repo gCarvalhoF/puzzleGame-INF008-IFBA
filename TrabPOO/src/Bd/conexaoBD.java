@@ -36,7 +36,7 @@ public class conexaoBD {
 			String query = "SELECT name FROM sqlite_master WHERE type='table' AND name='jogadores'";
 			ResultSet rs = stmt.executeQuery(query);
 			if (!rs.next()) {
-				String createTableQuery = "CREATE TABLE jogadores (id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR(32), pontuacao INTEGER)";
+				String createTableQuery = "CREATE TABLE jogadores (id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR(32), pontuacao FLOAT)";
 				stmt.executeUpdate(createTableQuery);
 			}
 			rs.close();
@@ -50,7 +50,7 @@ public class conexaoBD {
 			String query = "SELECT name FROM sqlite_master WHERE type='table' AND name='historico'";
 			ResultSet rs = stmt.executeQuery(query);
 			if (!rs.next()) {
-				query = "CREATE TABLE historico (id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR(32), pontuacao INTEGER)";
+				query = "CREATE TABLE historico (id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR(32), pontuacao FLOAT)";
 				stmt.executeUpdate(query);
 			}
 
@@ -101,6 +101,7 @@ public class conexaoBD {
 			stmt.close();
 			
 		} catch (SQLException e) {
+			System.out.println("BUG");
 			e.printStackTrace();
 		}
 	}
@@ -131,7 +132,7 @@ public class conexaoBD {
 		return partida.toString();
 	}
 	
-	public void listarPartidas() {
+	public ArrayList<String> listarPartidas() {
 		ArrayList<String> partidas = new ArrayList<String>();
 		ArrayList<Integer> id_partidas = new ArrayList<Integer>();
 		
@@ -156,6 +157,8 @@ public class conexaoBD {
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	    }
+		
+		return partidas;
 	}
 	
 	public int getIdUltimoRegistroPartida() {
@@ -180,7 +183,7 @@ public class conexaoBD {
 		
 	    
 	    try {
-	        String query = "SELECT ordem_tabuleiro FROM partida";
+	        String query = "SELECT ordem_tabuleiro FROM partida WHERE id_partida = " + Integer.toString(id_partida);
 	        ResultSet rs = stmt.executeQuery(query);
 	        
 	        String[] numbersAsStrings = rs.getString(1).split(", ");
@@ -200,11 +203,11 @@ public class conexaoBD {
 	    return board;
 	}
 	
-	public int carregarCronometro() {
+	public int carregarCronometro(int id_partida) {
 		int elapsedTime = 0;
 	    
 	    try {
-	        String query = "SELECT elapsed_time FROM partida";
+	        String query = "SELECT elapsed_time FROM partida WHERE id_partida = " + Integer.toString(id_partida);
 	        ResultSet rs = stmt.executeQuery(query);
 	        	        
 	        elapsedTime = rs.getInt(1);
@@ -215,11 +218,11 @@ public class conexaoBD {
 	    return elapsedTime;	
 	}
 	
-	public int carregarImagemTabuleiro() {
+	public int carregarImagemTabuleiro(int id_partida) {
 		int image_selected = 1;
 	    
 	    try {
-	        String query = "SELECT image_selected FROM partida";
+	        String query = "SELECT image_selected FROM partida WHERE id_partida = " + Integer.toString(id_partida);
 	        ResultSet rs = stmt.executeQuery(query);
 	        	        
 	        image_selected = rs.getInt(1);
@@ -277,7 +280,7 @@ public class conexaoBD {
 		}
 	}
 
-	public void inserirDados(String nome, int pontuacao) {
+	public void inserirDados(String nome, float pontuacao) {
 		try {
 			// Verifica se o jogador já existe na tabela jogadores
 			String query = "SELECT nome FROM jogadores WHERE nome = '" + nome + "'";

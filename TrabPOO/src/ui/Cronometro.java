@@ -112,6 +112,7 @@ public class Cronometro extends JPanel implements ActionListener{
 
 	 public void stop() {
 	 timer.stop();
+	 
 	 }
 
 	 void reset() {
