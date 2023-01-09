@@ -36,6 +36,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.UIManager;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
@@ -51,6 +52,7 @@ public class Jogo {
 	private JTextField txtJogador2;
 	private JTextField txtJogador1;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
+	private final ButtonGroup buttonGroup_1 = new ButtonGroup();
 
 	/**
 	 * Launch the application.
@@ -79,9 +81,12 @@ public class Jogo {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		ArrayList<JLabel> partidas = new ArrayList<JLabel>();
+		ArrayList<JRadioButton> btsPartidas = new ArrayList<JRadioButton>();
 		frame = new JFrame();
+		frame.setResizable(false);
 		frame.setIconImage(Toolkit.getDefaultToolkit().getImage("./Images/iconJogo.png"));
-		frame.setBounds(100, 100, 1048, 433);
+		frame.setBounds(100, 100, 1048, 425);
 		frame.setTitle("Puzzle-Game POO");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -101,6 +106,39 @@ public class Jogo {
 		rdbtnEmbaralharImpar.setHorizontalAlignment(SwingConstants.CENTER);
 		rdbtnEmbaralharImpar.setBounds(446, 230, 164, 23);
 		panel.add(rdbtnEmbaralharImpar);
+
+		JButton btNextPlayer = new JButton("Próximo Jogador");
+		btNextPlayer.setVisible(false);
+		btNextPlayer.setFont(new Font("Arial", Font.PLAIN, 13));
+		btNextPlayer.setBounds(803, 31, 164, 23);
+		panel_1.add(btNextPlayer);
+
+		JButton btVoltar = new JButton("Voltar ao Menu");
+		btVoltar.setFont(new Font("Arial", Font.PLAIN, 14));
+		btVoltar.setBounds(803, 261, 164, 23);
+		panel_1.add(btVoltar);
+
+		JLabel lbImgCompleta = new JLabel("");
+		lbImgCompleta.setBounds(559, 6, 186, 187);
+		panel_1.add(lbImgCompleta);
+
+		JButton btTrocarFoto = new JButton("Trocar Foto");
+		btTrocarFoto.setFont(new Font("Arial", Font.BOLD, 13));
+		btTrocarFoto.setBounds(569, 207, 164, 34);
+		panel_1.add(btTrocarFoto);
+
+		JLabel lbSelecioneImg = new JLabel("Selecione a imagem:");
+		lbSelecioneImg.setFont(new Font("Tahoma", Font.BOLD, 13));
+		lbSelecioneImg.setHorizontalAlignment(SwingConstants.CENTER);
+		lbSelecioneImg.setBounds(569, 206, 149, 23);
+		lbSelecioneImg.setVisible(false);
+		panel_1.add(lbSelecioneImg);
+
+		JRadioButton rdBtFenda = new JRadioButton("Fenda Do Bíquini");
+		rdBtFenda.setVisible(false);
+		buttonGroup.add(rdBtFenda);
+		rdBtFenda.setBounds(569, 287, 149, 23);
+		panel_1.add(rdBtFenda);
 
 		JLabel lblNewLabel = new JLabel("Opcional:");
 		lblNewLabel.setBounds(395, 234, 66, 14);
@@ -146,7 +184,7 @@ public class Jogo {
 		lbTitulo.setBounds(231, 109, 543, 23);
 		panel.add(lbTitulo);
 
-		JButton btnLimparHistorico = new JButton("LIMPAR HIST\u00D3RICO");
+		JButton btnLimparHistorico = new JButton("LIMPAR HISTÓRICO");
 		btnLimparHistorico.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				conexaoBD conexao = new conexaoBD();
@@ -159,34 +197,30 @@ public class Jogo {
 
 		btnLimparHistorico.setBounds(790, 202, 185, 23);
 		panel.add(btnLimparHistorico);
-
+		
+		JPanel panel_2 = new JPanel();
+		tabbedPane.addTab("Partidas Anteriores", null, panel_2, null);
+		panel_2.setLayout(null);
+		
+		JPanel panel_3 = new JPanel();
+		tabbedPane.addTab("Histórico", null, panel_3, null);
+		
 		JButton btnVerHistrico = new JButton("VER HISTÓRICO");
 		btnVerHistrico.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				conexaoBD conexao = new conexaoBD();
-
+				
 				conexao.atualizarHistorico();
-				// Obtem os dados do histórico
 				List<String> historico = conexao.visualizarHistorico();
-
+				
 				// Crie a nova janela ou aba para exibir os dados do histórico
-				JFrame janelaHistorico = new JFrame("Histórico de Vencedores");
-				JTabbedPane abas = new JTabbedPane();
-				JPanel painelHistorico = new JPanel();
 				JTextArea areaTexto = new JTextArea();
-				JScrollPane barraRolagem = new JScrollPane(areaTexto);
-				abas.addTab("Histórico", barraRolagem);
-				janelaHistorico.getContentPane().add(abas);
-				janelaHistorico.setSize(300, 200);
-				janelaHistorico.setLocationRelativeTo(null);
-				janelaHistorico.setVisible(true);
-
-				// Exiba os dados do histórico na nova janela ou aba
 				for (String linha : historico) {
 					areaTexto.append(linha + "\n");
 				}
-
 				conexao.fecharConexao();
+				panel_3.add(areaTexto);
+				tabbedPane.setSelectedIndex(3);
 			}
 		});
 
@@ -198,7 +232,7 @@ public class Jogo {
 		lbJogadorAtual.setHorizontalAlignment(SwingConstants.CENTER);
 		lbJogadorAtual.setBounds(79, 0, 98, 26);
 		panel_1.add(lbJogadorAtual);
-		
+
 		JRadioButton rdBtManoelGomes = new JRadioButton("Manoel Gomes");
 		rdBtManoelGomes.setVisible(false);
 		buttonGroup.add(rdBtManoelGomes);
@@ -207,14 +241,17 @@ public class Jogo {
 
 		JButton btnNewButton = new JButton("Novo Jogo");
 		ArrayList<Jogador> jogadores = new ArrayList<Jogador>();
-		
+
 		Partida partida = new Partida(jogadores, 1);
+
+		Cronometro painel_cronometro = partida.cronometro;
+		painel_cronometro.setBounds(650, 28, 544, 319);
+		panel_1.add(painel_cronometro);
 
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!(txtJogador1.getText().isEmpty())
-					|| !(txtJogador2.getText().isEmpty())
-					|| !(txtJogador3.getText().isEmpty())) {
+				if (!(txtJogador1.getText().isEmpty()) || !(txtJogador2.getText().isEmpty())
+						|| !(txtJogador3.getText().isEmpty())) {
 
 					conexaoBD banco = new conexaoBD();
 					banco.criarTabelaPartida();
@@ -243,14 +280,15 @@ public class Jogo {
 					// Obtém os valores dos campos de texto
 					tabbedPane.setSelectedIndex(1);
 					rdBtManoelGomes.setSelected(true);
-					
+
 					txtJogador1.setText("");
 					txtJogador2.setText("");
 					txtJogador3.setText("");
 					conexao.fecharConexao();
 					lbJogadorAtual.setText(jogadores.get(0).getNome());
-					
+
 					partida.iniciarPartida(jogadores, 2);
+					painel_cronometro.start();
 				} else {
 					JOptionPane.showMessageDialog(null,
 							"Não há jogadores escalados para a partida, favor inserir o(s) nome(s)!");
@@ -266,17 +304,9 @@ public class Jogo {
 		painel_tabuleiro.setBounds(0, 28, 544, 319);
 		panel_1.add(painel_tabuleiro);
 
-		JLabel lbImgCompleta = new JLabel("");
-		lbImgCompleta.setBounds(559, 6, 186, 187);
-		panel_1.add(lbImgCompleta);
-
 		JLabel lblNewLabel_1 = new JLabel("Jogador Atual:");
 		lblNewLabel_1.setBounds(10, 6, 98, 14);
 		panel_1.add(lblNewLabel_1);
-
-		Cronometro painel_cronometro = partida.cronometro;
-		painel_cronometro.setBounds(650, 28, 544, 319);
-		panel_1.add(painel_cronometro);
 
 		rdBtManoelGomes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -305,8 +335,6 @@ public class Jogo {
 		rdBtOrochi.setBounds(569, 261, 149, 23);
 		panel_1.add(rdBtOrochi);
 
-		JRadioButton rdBtFenda = new JRadioButton("Fenda Do Bíquini");
-		rdBtFenda.setVisible(false);
 		rdBtFenda.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (rdBtFenda.isSelected()) {
@@ -317,46 +345,49 @@ public class Jogo {
 				}
 			}
 		});
-		buttonGroup.add(rdBtFenda);
-		rdBtFenda.setBounds(569, 287, 149, 23);
-		panel_1.add(rdBtFenda);
-		
-		JLabel lblNewLabel_2 = new JLabel("Selecione a imagem:");
-		lblNewLabel_2.setFont(new Font("Tahoma", Font.BOLD, 13));
-		lblNewLabel_2.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel_2.setBounds(569, 206, 149, 23);
-		lblNewLabel_2.setVisible(false);
-		panel_1.add(lblNewLabel_2);
 
-		JButton btTrocarFoto = new JButton("Trocar Foto");
-		btTrocarFoto.setFont(new Font("Arial", Font.BOLD, 13));
 		btTrocarFoto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				rdBtManoelGomes.setVisible(true);
 				rdBtOrochi.setVisible(true);
 				rdBtFenda.setVisible(true);
-				lblNewLabel_2.setVisible(true);
+				lbSelecioneImg.setVisible(true);
 				btTrocarFoto.setVisible(false);
 			}
 		});
-		btTrocarFoto.setBounds(569, 207, 164, 34);
-		panel_1.add(btTrocarFoto);
-		
+
 		JButton btSalvarJogo = new JButton("Salvar Jogo");
 		btSalvarJogo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-			conexaoBD conexao = new conexaoBD();
-			
-			int[] arrayBoard = painel_tabuleiro.boardToArray();
-			// Salva o tabuleiro no banco de dados
-			conexao.salvarPartida(arrayBoard, jogadores.get(0), painel_cronometro.getElapsedTime(), Integer.parseInt(painel_tabuleiro.image_selected)); // chama o método salvarTabuleiro da classe conexaoBD
-			JOptionPane.showMessageDialog(null, "Jogo salvo com sucesso!");
-		}
+				conexaoBD conexao = new conexaoBD();
+
+				int[] arrayBoard = painel_tabuleiro.boardToArray();
+				// Salva o tabuleiro no banco de dados
+				for (int i = 0; i < jogadores.size(); i++) {
+					conexao.salvarPartida(arrayBoard, jogadores.get(i), painel_cronometro.getElapsedTime(),
+							Integer.parseInt(painel_tabuleiro.image_selected), partida.getId()); // chama o método salvarTabuleiro da classe
+				}
+				
+				jogadores.clear();
+																			// conexaoBD
+				JOptionPane.showMessageDialog(null, "Jogo salvo com sucesso!");
+			}
 		});
 
 		btSalvarJogo.setFont(new Font("Arial", Font.PLAIN, 12));
 		btSalvarJogo.setBounds(161, 66, 150, 23);
 		painel_cronometro.add(btSalvarJogo);
+
+		btVoltar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				painel_cronometro.stop();
+				tabbedPane.setSelectedIndex(0);
+			}
+		});
+
+		ImageIcon icon = new ImageIcon(
+				new ImageIcon("./Images/" + 1 + ".png").getImage().getScaledInstance(190, 190, Image.SCALE_DEFAULT));
+		lbImgCompleta.setIcon(icon);
 
 		JButton btAutoResolve = new JButton("Auto-Resolve");
 		btAutoResolve.addActionListener(new ActionListener() {
@@ -364,59 +395,51 @@ public class Jogo {
 				painel_cronometro.stop();
 				painel_tabuleiro.solveBoard();
 				painel_cronometro.setVisibilityStart(false);
+				btNextPlayer.setVisible(true);
+
 				// btAutoResolve.setEnabled(false);
 			}
 		});
 		btAutoResolve.setFont(new Font("Arial", Font.PLAIN, 13));
 		btAutoResolve.setBounds(124, 189, 219, 25);
 		painel_cronometro.add(btAutoResolve);
-		
-		JButton btVoltar = new JButton("Voltar ao Menu");
-		btVoltar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				painel_cronometro.stop();
-				tabbedPane.setSelectedIndex(0);	
-			}
-		});
-		btVoltar.setFont(new Font("Arial", Font.PLAIN, 14));
-		btVoltar.setBounds(803, 261, 164, 23);
-		panel_1.add(btVoltar);
-
-		ImageIcon icon = new ImageIcon(new ImageIcon("./Images/" + 1 + ".png").getImage().getScaledInstance(190,
-				190, Image.SCALE_DEFAULT));
-		lbImgCompleta.setIcon(icon);
 
 		JButton btContinuarJogo = new JButton("Carregar Jogo Anterior");
 		btContinuarJogo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				tabbedPane.setSelectedIndex(2);
 				conexaoBD conexao = new conexaoBD();
 				
-				int[][] board = conexao.carregarPartida(1);
-				painel_tabuleiro.setBoard(board);
-
-				painel_cronometro.setElapsedTime(conexao.carregarCronometro());
+				conexao.listarPartidas();
 				
-				int selected_image = conexao.carregarImagemTabuleiro();
-				painel_tabuleiro.switchImage(selected_image);
-				ImageIcon icon = new ImageIcon(new ImageIcon("./Images/" + selected_image + ".png").getImage().getScaledInstance(190,
-						190, Image.SCALE_DEFAULT));
-				lbImgCompleta.setIcon(icon);
-				switch (selected_image) {
-					case 1: {
-						rdBtManoelGomes.setSelected(true);;
-					}
-					case 2: {
-						rdBtOrochi.setSelected(true);;
-					}
-					case 3: {
-						rdBtFenda.setSelected(true);;
-					}
-				}
-				
-				tabbedPane.setSelectedIndex(1);
-				painel_cronometro.start();
+				JLabel lbPartida1 = new JLabel("Partida 1");
+				lbPartida1.setToolTipText("");
+				lbPartida1.setBounds(410, 71, 217, 23);
+				panel_2.add(lbPartida1);
 
-				conexao.fecharConexao();
+				JRadioButton rdbtnNewRadioButton = new JRadioButton("");
+				buttonGroup_1.add(rdbtnNewRadioButton);
+				rdbtnNewRadioButton.setBounds(373, 71, 21, 23);
+				panel_2.add(rdbtnNewRadioButton);
+
+				/*
+				 * int[][] board = conexao.carregarPartida(1); painel_tabuleiro.setBoard(board);
+				 * 
+				 * painel_cronometro.setElapsedTime(conexao.carregarCronometro());
+				 * 
+				 * int selected_image = conexao.carregarImagemTabuleiro();
+				 * painel_tabuleiro.switchImage(selected_image); ImageIcon icon = new
+				 * ImageIcon(new ImageIcon("./Images/" + selected_image + ".png").getImage()
+				 * .getScaledInstance(190, 190, Image.SCALE_DEFAULT));
+				 * lbImgCompleta.setIcon(icon); switch (selected_image) { case 1: {
+				 * rdBtManoelGomes.setSelected(true); ; } case 2: {
+				 * rdBtOrochi.setSelected(true); ; } case 3: { rdBtFenda.setSelected(true); ; }
+				 * }
+				 * 
+				 * tabbedPane.setSelectedIndex(1); painel_cronometro.start();
+				 * 
+				 * conexao.fecharConexao();
+				 */
 			}
 		});
 		btContinuarJogo.setFont(new Font("Arial", Font.PLAIN, 13));
@@ -437,5 +460,25 @@ public class Jogo {
 		lbBG2.setBounds(732, -46, 180, 156);
 		panel.add(lbBG2);
 
+		JLabel lblNewLabel_2 = new JLabel("ESCOLHA A PARTIDA QUE DESEJA RETOMAR:");
+		lblNewLabel_2.setFont(new Font("Arial", Font.BOLD, 27));
+		lblNewLabel_2.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel_2.setBounds(111, 11, 819, 32);
+		panel_2.add(lblNewLabel_2);
+		
+		JButton btVoltarTela = new JButton("Voltar ao Menu");
+		btVoltarTela.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				tabbedPane.setSelectedIndex(0);
+			}
+		});
+		btVoltarTela.setBounds(410, 324, 192, 23);
+		panel_2.add(btVoltarTela);
+		btVoltarTela.setBounds(410, 324, 192, 23);
+
+		JButton btnNewButton_1 = new JButton("Carregar Partida");
+		btnNewButton_1.setFont(new Font("Arial", Font.BOLD, 16));
+		btnNewButton_1.setBounds(353, 272, 295, 43);
+		panel_2.add(btnNewButton_1);
 	}
 }

@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import negocio.Jogador;
@@ -64,7 +65,7 @@ public class conexaoBD {
 			String query = "SELECT name FROM sqlite_master WHERE type='table' AND name='partida'";
 			ResultSet rs = stmt.executeQuery(query);
 			if (!rs.next()) {
-				query = "CREATE TABLE partida (id_partida INTEGER PRIMARY KEY AUTOINCREMENT, ordem_tabuleiro string, nome_jogador string, elapsed_time int, image_selected int)";
+				query = "CREATE TABLE partida (id_registro INTEGER PRIMARY KEY AUTOINCREMENT, ordem_tabuleiro string, nome_jogador string, elapsed_time int, image_selected int, id_partida int)";
 				stmt.executeUpdate(query);
 			}
 
@@ -74,7 +75,7 @@ public class conexaoBD {
 		}
 	}
 
-	public void salvarPartida(int[] tabuleiro, Jogador jogador, int elapsedTime, int image_selected) {
+	public void salvarPartida(int[] tabuleiro, Jogador jogador, int elapsedTime, int image_selected, int id_partida) {
 		
 		// Transformar array de ordem do tabuleiro em string para ser armazenado no banco
 		StringBuilder sb = new StringBuilder();
@@ -87,7 +88,7 @@ public class conexaoBD {
 		String numbersString = sb.toString();
 				
 		try {
-			String query = "INSERT INTO partida (ordem_tabuleiro, nome_jogador, elapsed_time, image_selected) VALUES (?, ?, ?, ?)";
+			String query = "INSERT INTO partida (ordem_tabuleiro, nome_jogador, elapsed_time, image_selected, id_partida) VALUES (?, ?, ?, ?, ?)";
 			PreparedStatement stmt = conn.prepareStatement(query);
 
 			// Percorre o array e insere cada valor na tabela
@@ -95,12 +96,64 @@ public class conexaoBD {
 			stmt.setString(2, jogador.getNome());
 			stmt.setInt(3, elapsedTime);
 			stmt.setInt(4, image_selected);
+			stmt.setInt(5, id_partida);
 			stmt.executeUpdate();
 			stmt.close();
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void listarPartidas() {
+		ArrayList<String> partidas = new ArrayList<String>();
+		
+		try {
+	        String nomes = "SELECT nome_jogador, id_partida, image_selected FROM partida GROUP BY id_partida";
+	        ResultSet rsNomes = stmt.executeQuery(nomes);
+	        
+	        while (rsNomes.next()) {
+	        	StringBuilder partida = new StringBuilder();
+	        	int id_partida = rsNomes.getInt("id_partida");
+				
+	        	partida.append(Integer.toString(rsNomes.getInt("id_partida")));
+	        	
+	        	if(id_partida == rsNomes.getInt("id_partida")) {
+	        		partida.append(rsNomes.getString("nome_jogador"));
+	        		partida.append(", ");
+	        		continue;
+	        	}
+	        	
+	        	partida.append(Integer.toString(rsNomes.getInt("image_selected")));
+	        	
+	        	partidas.add(partida.toString());
+			}
+	        rsNomes.close();
+			
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+		for (int i = 0; i < partidas.size(); i++){
+			System.out.println(partidas.get(i));
+			System.out.println(" - ");
+		}
+	}
+	
+	public int getIdUltimoRegistroPartida() {
+		int result = 0;
+		try {
+	        String query = "SELECT id_partida FROM partida ORDER BY id_partida DESC LIMIT 1;";
+	        ResultSet rs = stmt.executeQuery(query);
+	        
+	        result = rs.getInt(1);
+	        
+	        rs.close();
+			
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+		
+		return result;
 	}
 	
 	public int[][] carregarPartida(int id_partida) {
@@ -168,8 +221,8 @@ public class conexaoBD {
 		}
 	}
 
-	public List<String> visualizarHistorico() {
-		List<String> historico = new ArrayList<>();
+	public ArrayList<String> visualizarHistorico() {
+		ArrayList<String> historico = new ArrayList<String>();
 		try {
 			String query = "SELECT * FROM historico ORDER BY pontuacao DESC";
 			ResultSet rs = stmt.executeQuery(query);
@@ -227,7 +280,7 @@ public class conexaoBD {
 		}
 	}
 
-	public void recuperarDados() {
+	public void recuperarDadosJogadores() {
 		try {
 			String query = "SELECT * FROM jogadores";
 			ResultSet rs = stmt.executeQuery(query);
