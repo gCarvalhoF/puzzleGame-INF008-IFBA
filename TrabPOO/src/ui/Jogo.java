@@ -107,12 +107,6 @@ public class Jogo {
 		rdbtnEmbaralharImpar.setBounds(446, 230, 164, 23);
 		panel.add(rdbtnEmbaralharImpar);
 
-		JButton btNextPlayer = new JButton("Próximo Jogador");
-		btNextPlayer.setVisible(false);
-		btNextPlayer.setFont(new Font("Arial", Font.PLAIN, 13));
-		btNextPlayer.setBounds(803, 31, 164, 23);
-		panel_1.add(btNextPlayer);
-
 		JButton btVoltar = new JButton("Voltar ao Menu");
 		btVoltar.setFont(new Font("Arial", Font.PLAIN, 14));
 		btVoltar.setBounds(803, 261, 164, 23);
@@ -197,22 +191,22 @@ public class Jogo {
 
 		btnLimparHistorico.setBounds(790, 202, 185, 23);
 		panel.add(btnLimparHistorico);
-		
+
 		JPanel panel_2 = new JPanel();
 		tabbedPane.addTab("Partidas Anteriores", null, panel_2, null);
 		panel_2.setLayout(null);
-		
+
 		JPanel panel_3 = new JPanel();
 		tabbedPane.addTab("Histórico", null, panel_3, null);
-		
+
 		JButton btnVerHistrico = new JButton("VER HISTÓRICO");
 		btnVerHistrico.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				conexaoBD conexao = new conexaoBD();
-				
+
 				conexao.atualizarHistorico();
 				List<String> historico = conexao.visualizarHistorico();
-				
+
 				// Crie a nova janela ou aba para exibir os dados do histórico
 				JTextArea areaTexto = new JTextArea();
 				for (String linha : historico) {
@@ -285,7 +279,7 @@ public class Jogo {
 					txtJogador2.setText("");
 					txtJogador3.setText("");
 					conexao.fecharConexao();
-					lbJogadorAtual.setText(jogadores.get(0).getNome());
+					lbJogadorAtual.setText(jogadores.get(partida.getCurrentPlayer()).getNome());
 
 					partida.iniciarPartida(jogadores, 2);
 					painel_cronometro.start();
@@ -365,11 +359,10 @@ public class Jogo {
 				// Salva o tabuleiro no banco de dados
 				for (int i = 0; i < jogadores.size(); i++) {
 					conexao.salvarPartida(arrayBoard, jogadores.get(i), painel_cronometro.getElapsedTime(),
-							Integer.parseInt(painel_tabuleiro.image_selected), partida.getId()); // chama o método salvarTabuleiro da classe
+							Integer.parseInt(painel_tabuleiro.image_selected), partida.getId()); // chama o método
+																									// salvarTabuleiro
+																									// da classe
 				}
-				
-				jogadores.clear();
-																			// conexaoBD
 				JOptionPane.showMessageDialog(null, "Jogo salvo com sucesso!");
 			}
 		});
@@ -382,6 +375,7 @@ public class Jogo {
 			public void actionPerformed(ActionEvent e) {
 				painel_cronometro.stop();
 				tabbedPane.setSelectedIndex(0);
+				jogadores.clear();
 			}
 		});
 
@@ -389,29 +383,14 @@ public class Jogo {
 				new ImageIcon("./Images/" + 1 + ".png").getImage().getScaledInstance(190, 190, Image.SCALE_DEFAULT));
 		lbImgCompleta.setIcon(icon);
 
-		JButton btAutoResolve = new JButton("Auto-Resolve");
-		btAutoResolve.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				painel_cronometro.stop();
-				painel_tabuleiro.solveBoard();
-				painel_cronometro.setVisibilityStart(false);
-				btNextPlayer.setVisible(true);
-
-				// btAutoResolve.setEnabled(false);
-			}
-		});
-		btAutoResolve.setFont(new Font("Arial", Font.PLAIN, 13));
-		btAutoResolve.setBounds(124, 189, 219, 25);
-		painel_cronometro.add(btAutoResolve);
-
 		JButton btContinuarJogo = new JButton("Carregar Jogo Anterior");
 		btContinuarJogo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				tabbedPane.setSelectedIndex(2);
 				conexaoBD conexao = new conexaoBD();
-				
+
 				conexao.listarPartidas();
-				
+
 				JLabel lbPartida1 = new JLabel("Partida 1");
 				lbPartida1.setToolTipText("");
 				lbPartida1.setBounds(410, 71, 217, 23);
@@ -465,7 +444,7 @@ public class Jogo {
 		lblNewLabel_2.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_2.setBounds(111, 11, 819, 32);
 		panel_2.add(lblNewLabel_2);
-		
+
 		JButton btVoltarTela = new JButton("Voltar ao Menu");
 		btVoltarTela.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -480,5 +459,39 @@ public class Jogo {
 		btnNewButton_1.setFont(new Font("Arial", Font.BOLD, 16));
 		btnNewButton_1.setBounds(353, 272, 295, 43);
 		panel_2.add(btnNewButton_1);
+
+		JButton btNextPlayer = new JButton("Próximo Jogador");
+		btNextPlayer.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					lbJogadorAtual.setText(jogadores.get(partida.getCurrentPlayer()).getNome());
+					painel_cronometro.reset();
+				} catch (Exception e2) {
+					JOptionPane.showMessageDialog(null, "Fim de Jogo, o último jogador encerrou sua partida!");
+					jogadores.clear();
+					tabbedPane.setSelectedIndex(0);
+
+				}
+			}
+		});
+		btNextPlayer.setVisible(false);
+		btNextPlayer.setFont(new Font("Arial", Font.PLAIN, 13));
+		btNextPlayer.setBounds(803, 31, 164, 23);
+		panel_1.add(btNextPlayer);
+
+		JButton btAutoResolve = new JButton("Auto-Resolve");
+		btAutoResolve.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				painel_cronometro.stop();
+				painel_tabuleiro.solveBoard();
+				painel_cronometro.setVisibilityStart(false);
+				btNextPlayer.setVisible(true);
+
+				// btAutoResolve.setEnabled(false);
+			}
+		});
+		btAutoResolve.setFont(new Font("Arial", Font.PLAIN, 13));
+		btAutoResolve.setBounds(124, 189, 219, 25);
+		painel_cronometro.add(btAutoResolve);
 	}
 }

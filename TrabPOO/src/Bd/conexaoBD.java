@@ -105,38 +105,57 @@ public class conexaoBD {
 		}
 	}
 	
+	public String getPartidaData(int id_partida) {
+		StringBuilder partida = new StringBuilder();
+			
+		try {
+		String data = "SELECT id_partida, image_selected, nome_jogador FROM partida WHERE id_partida = " + Integer.toString(id_partida);
+		ResultSet rsData = stmt.executeQuery(data);
+		
+		int image_selected = rsData.getInt("image_selected");
+    	partida.append(Integer.toString(rsData.getInt("id_partida")));
+    	
+    	partida.append(", ");
+    	while (rsData.next()) {
+    		partida.append(rsData.getString("nome_jogador"));
+    		partida.append(", ");
+    	}
+    	
+    	partida.append(Integer.toString(image_selected));
+    	rsData.close();
+    	}
+		catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+		
+		return partida.toString();
+	}
+	
 	public void listarPartidas() {
 		ArrayList<String> partidas = new ArrayList<String>();
+		ArrayList<Integer> id_partidas = new ArrayList<Integer>();
 		
 		try {
-	        String nomes = "SELECT nome_jogador, id_partida, image_selected FROM partida GROUP BY id_partida";
-	        ResultSet rsNomes = stmt.executeQuery(nomes);
+	        String ids = "SELECT DISTINCT id_partida FROM partida";
+	        ResultSet rsIds = stmt.executeQuery(ids);
 	        
-	        while (rsNomes.next()) {
-	        	StringBuilder partida = new StringBuilder();
-	        	int id_partida = rsNomes.getInt("id_partida");
-				
-	        	partida.append(Integer.toString(rsNomes.getInt("id_partida")));
+	        while (rsIds.next()) {
+	        	id_partidas.add(rsIds.getInt(1));
+	        }
+	        rsIds.close();
+	        	        
+	        int qtdPartidas = id_partidas.size();
+	        
+	        for (int i = 0; i < qtdPartidas; i++ ) {
+	        	String partida = getPartidaData(id_partidas.get(i));
 	        	
-	        	if(id_partida == rsNomes.getInt("id_partida")) {
-	        		partida.append(rsNomes.getString("nome_jogador"));
-	        		partida.append(", ");
-	        		continue;
-	        	}
-	        	
-	        	partida.append(Integer.toString(rsNomes.getInt("image_selected")));
-	        	
-	        	partidas.add(partida.toString());
+	        	partidas.add(partida);
 			}
-	        rsNomes.close();
+	        
 			
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	    }
-		for (int i = 0; i < partidas.size(); i++){
-			System.out.println(partidas.get(i));
-			System.out.println(" - ");
-		}
 	}
 	
 	public int getIdUltimoRegistroPartida() {

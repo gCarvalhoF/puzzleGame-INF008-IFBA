@@ -12,12 +12,15 @@ public class Partida {
 	public Tabuleiro tabuleiro;
 	public Cronometro cronometro;
 	private int id;
-	
+	private int currentPlayer = -1;
+	private int[][] tabuleiroInicial;
+
 	public Partida(ArrayList<Jogador> jogadores, int image_selected) {
 		iniciarPartida(jogadores, image_selected);
 	}
 
 	public void iniciarPartida(ArrayList<Jogador> jogadores, int image_selected) {
+		this.jogadores = jogadores;
 		this.tabuleiro = new Tabuleiro(image_selected, false);
 		this.cronometro = new Cronometro((Tabuleiro) this.tabuleiro);
 		this.checkWin();
@@ -42,9 +45,12 @@ public class Partida {
 		}
 	}
 
-
-	public void setPlayers(ArrayList<Jogador> jogadores) {
-		this.jogadores = jogadores;
+	public int getCurrentPlayer() {
+		setCurrentPlayer(currentPlayer + 1);
+		return currentPlayer;
 	}
-	
+
+	public void setCurrentPlayer(int currentPlayer) {
+		this.currentPlayer = currentPlayer;
+	}
 }

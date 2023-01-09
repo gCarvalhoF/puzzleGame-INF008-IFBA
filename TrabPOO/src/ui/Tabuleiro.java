@@ -42,7 +42,7 @@ public class Tabuleiro extends JPanel {
 			}
 		}
 	}
-
+	
 	public int[][] getBoard() {
 		return board;
 	}
