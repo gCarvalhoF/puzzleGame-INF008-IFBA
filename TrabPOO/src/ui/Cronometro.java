@@ -21,20 +21,18 @@ public class Cronometro extends JPanel implements ActionListener{
  Timer timer = new Timer(1000, new ActionListener() {
   
   public void actionPerformed(ActionEvent e) {
-   
-   elapsedTime=elapsedTime+1000;
-   minutes = (elapsedTime/60000) % 60;
-   seconds = (elapsedTime/1000) % 60;
-   seconds_string = String.format("%02d", seconds);
-   minutes_string = String.format("%02d", minutes);
-   timeLabel.setText(minutes_string+":"+seconds_string);
-   
+	  elapsedTime=elapsedTime+1000;
+	   minutes = (elapsedTime/60000) % 60;
+	   seconds = (elapsedTime/1000) % 60;
+	   seconds_string = String.format("%02d", seconds);
+	   minutes_string = String.format("%02d", minutes);
+	   timeLabel.setText(minutes_string+":"+seconds_string);
   }
   
  });
  
  
- public Cronometro(Tabuleiro tabuleiro){  
+ public Cronometro(Tabuleiro tabuleiro){
   timeLabel.setBounds(124,100,219,45);
   timeLabel.setText(minutes_string+":"+seconds_string);
   timeLabel.setFont(new Font("Arial",Font.BOLD,35));
@@ -60,21 +58,41 @@ public class Cronometro extends JPanel implements ActionListener{
   add(timeLabel);
  }
  
+ public String[] transformMiliseconds(int miliseconds) {
+	 int elapsedTime = miliseconds;
+	 int minutes = (elapsedTime/60000) % 60;
+	 int seconds = (elapsedTime/1000) % 60;
+	 String seconds_string = String.format("%02d", seconds);
+	 String minutes_string = String.format("%02d", minutes);
+
+	 String[] result = {minutes_string, seconds_string};
+	 return result;
+	 }
+ 
+ public int getElapsedTime() {
+		return elapsedTime;
+	}
+
+	public void setElapsedTime(int elapsedTime) {
+		this.elapsedTime = elapsedTime;
+		String[] time = transformMiliseconds(elapsedTime);
+		
+		timeLabel.setText(time[0]+":"+time[1]);
+	}
+ 
  public void actionPerformed(ActionEvent e) {
 
 	 if(e.getSource()==startButton) {
 
 	 if(started==false) {
 	 started=true;
-	 this.tabuleiro.setEnableMovement(started);
-	 
+	 this.tabuleiro.setEnableMovement(started); 
 	 startButton.setText("PAUSAR");
 	 start();
 	 }
 	 else {
 	 started=false;
 	 this.tabuleiro.setEnableMovement(started);
-	 
 	 startButton.setText("COMEÇAR");
 	 stop();
 	 }
@@ -88,24 +106,35 @@ public class Cronometro extends JPanel implements ActionListener{
 
 	 }
 
-	 void start() {
+	 public void start() {
 	 timer.start();
 	 }
 
-	 void stop() {
+	 public void stop() {
 	 timer.stop();
 	 }
 
 	 void reset() {
 	 timer.stop();
+	 started=true;
+	 startButton.setText("PAUSAR");
 	 elapsedTime=0;
 	 seconds =0;
 	 minutes=0;
 	 seconds_string = String.format("%02d", seconds);
 	 minutes_string = String.format("%02d", minutes);
 	 timeLabel.setText(minutes_string+":"+seconds_string);
-	 
+	 timer.start();
 	 this.tabuleiro.shuffleBoard();
+	 setVisibilityStart(true);
 	 }
-
+	 
+	 public void setVisibilityStart(boolean verify) {
+		 startButton.setEnabled(verify);
+	 }
+	 
+	 public void setVisibilityReset(boolean verify) {
+		 resetButton.setEnabled(verify);
+	 }
+	 
 	 }

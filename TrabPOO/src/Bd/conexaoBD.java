@@ -7,8 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import negocio.Jogador;
 import ui.Tabuleiro;
 
 public class conexaoBD {
@@ -57,12 +59,12 @@ public class conexaoBD {
 		}
 	}
 
-	public void criarTabelaTabuleiro() {
+	public void criarTabelaPartida() {
 		try {
-			String query = "SELECT name FROM sqlite_master WHERE type='table' AND name='tabuleiro'";
+			String query = "SELECT name FROM sqlite_master WHERE type='table' AND name='partida'";
 			ResultSet rs = stmt.executeQuery(query);
 			if (!rs.next()) {
-				query = "CREATE TABLE tabuleiro (id INTEGER PRIMARY KEY AUTOINCREMENT, valor INTEGER, linha INTEGER, coluna INTEGER)";
+				query = "CREATE TABLE partida (id_partida INTEGER PRIMARY KEY AUTOINCREMENT, ordem_tabuleiro string, nome_jogador string, elapsed_time int, image_selected int)";
 				stmt.executeUpdate(query);
 			}
 
@@ -72,42 +74,90 @@ public class conexaoBD {
 		}
 	}
 
-	public void salvarTabuleiro(int[][] tabuleiro) {
+	public void salvarPartida(int[] tabuleiro, Jogador jogador, int elapsedTime, int image_selected) {
+		
+		// Transformar array de ordem do tabuleiro em string para ser armazenado no banco
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < tabuleiro.length; i++) {
+		    sb.append(tabuleiro[i]);
+		    if (i < tabuleiro.length - 1) {
+		        sb.append(", ");
+		    }
+		}
+		String numbersString = sb.toString();
+				
 		try {
-			String query = "INSERT INTO tabuleiro (linha, coluna, valor) VALUES (?, ?, ?)";
+			String query = "INSERT INTO partida (ordem_tabuleiro, nome_jogador, elapsed_time, image_selected) VALUES (?, ?, ?, ?)";
 			PreparedStatement stmt = conn.prepareStatement(query);
 
-			// Percorre o tabuleiro e insere cada valor na tabela
-			for (int i = 0; i < tabuleiro.length; i++) {
-				for (int j = 0; j < tabuleiro[i].length; j++) {
-					stmt.setInt(1, i);
-					stmt.setInt(2, j);
-					stmt.setInt(3, tabuleiro[i][j]);
-					stmt.executeUpdate();
+			// Percorre o array e insere cada valor na tabela
+			stmt.setString(1, numbersString);
+			stmt.setString(2, jogador.getNome());
+			stmt.setInt(3, elapsedTime);
+			stmt.setInt(4, image_selected);
+			stmt.executeUpdate();
+			stmt.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public int[][] carregarPartida(int id_partida) {
+		int[][] board = new int[4][4];
+		
+	    
+	    try {
+	        String query = "SELECT ordem_tabuleiro FROM partida";
+	        ResultSet rs = stmt.executeQuery(query);
+	        
+	        String[] numbersAsStrings = rs.getString(1).split(", ");
+	        int[] numbers = Arrays.stream(numbersAsStrings).mapToInt(Integer::parseInt).toArray();
+	        rs.close();
+
+	        
+			for (int i = 0; i < 4; i++) {
+				for (int j = 0; j < 4; j++) {
+					board[i][j] = numbers[i * 4 + j];
 				}
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+			
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return board;
+	}
+	
+	public int carregarCronometro() {
+		int elapsedTime = 0;
+	    
+	    try {
+	        String query = "SELECT elapsed_time FROM partida";
+	        ResultSet rs = stmt.executeQuery(query);
+	        	        
+	        elapsedTime = rs.getInt(1);
+	        rs.close();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return elapsedTime;	
+	}
+	
+	public int carregarImagemTabuleiro() {
+		int image_selected = 1;
+	    
+	    try {
+	        String query = "SELECT image_selected FROM partida";
+	        ResultSet rs = stmt.executeQuery(query);
+	        	        
+	        image_selected = rs.getInt(1);
+	        rs.close();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return image_selected;	
 	}
 
-	public int[][] carregarTabuleiro() {
-		int[][] board = new int[4][4];
-		try {
-			String query = "SELECT * FROM tabuleiro ORDER BY linha, coluna";
-			ResultSet rs = stmt.executeQuery(query);
-			while (rs.next()) {
-				int valor = rs.getInt("valor");
-				int linha = rs.getInt("linha");
-				int coluna = rs.getInt("coluna");
-				board[linha][coluna] = valor;
-			}
-			rs.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return board;
-	}
 
 	public void atualizarHistorico() {
 		try {
@@ -119,45 +169,41 @@ public class conexaoBD {
 	}
 
 	public List<String> visualizarHistorico() {
-		  List<String> historico = new ArrayList<>();
-		  try {
-		    String query = "SELECT * FROM historico ORDER BY pontuacao DESC";
-		    ResultSet rs = stmt.executeQuery(query);
-		    while (rs.next()) {
-		      String nome = rs.getString("nome");
-		      int movimentos = rs.getInt("pontuacao");
-		      String item = nome + " - " + movimentos + " pontuação";
-		      historico.add(item);
-		    }
-		    rs.close();
-		  } catch (SQLException e) {
-		    e.printStackTrace();
-		  }
-		  return historico;
+		List<String> historico = new ArrayList<>();
+		try {
+			String query = "SELECT * FROM historico ORDER BY pontuacao DESC";
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				String nome = rs.getString("nome");
+				int movimentos = rs.getInt("pontuacao");
+				String item = nome + " - " + movimentos + " pontuação";
+				historico.add(item);
+			}
+			rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-
+		return historico;
+	}
 
 	public void limparHistorico() {
-	    try {
-	        // Crie a query para apagar todos os registros da tabela historico
-	        String query = "DELETE FROM historico";
-	        stmt.executeUpdate(query);
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
+		try {
+			// Crie a query para apagar todos os registros da tabela historico
+			String query = "DELETE FROM historico";
+			stmt.executeUpdate(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
-	
+
 	public void limparTabelaJogadores() {
-	    try {
-	        String query = "DELETE FROM jogadores";
-	        stmt.executeUpdate(query);
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
+		try {
+			String query = "DELETE FROM jogadores";
+			stmt.executeUpdate(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
-
-
-
 
 	public void inserirDados(String nome, int pontuacao) {
 		try {
@@ -205,12 +251,8 @@ public class conexaoBD {
 		}
 	}
 
-	public void inserirJogadores(String nomeJogador1, String nomeJogador2, String nomeJogador3) {
-		// TODO Auto-generated method stub
-		inserirDados(nomeJogador1, 0);
-		inserirDados(nomeJogador2, 0);
-		inserirDados(nomeJogador3, 0);
-
+	public void inserirJogador(String nomeJogador) {
+		inserirDados(nomeJogador, 0);
 	}
 
 }

@@ -6,7 +6,7 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/gcarvalhof/Downloads/sqlite-jdbc-3.40.0.0.jar">
+	<classpathentry kind="lib" path="/home/gcarvalhof/coding/java-codes/puzzleGame-INF008-IFBA/TrabPOO/bin/sqlite-jdbc-3.40.0.0.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>

@@ -3,6 +3,7 @@ package ui;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import javax.swing.*;
 
@@ -87,6 +88,22 @@ public class Tabuleiro extends JPanel {
 		return board;
 	}
 
+	public int[] boardToArray() {
+		
+		int[] array = Arrays.stream(this.board).flatMapToInt(Arrays::stream).toArray();
+		
+//		int size = PUZZLE_SIZE * PUZZLE_SIZE;
+//		int[] array = new int[size];
+//
+//		for (int i = 0; i < PUZZLE_SIZE; i++) {
+//			for (int j = 0; j < PUZZLE_SIZE; j++) {
+//				array[i * PUZZLE_SIZE + j] = this.board[i][j];
+//			}
+//		}
+
+		return array;
+	}
+
 	public void shuffleBoard() {
 		// Create a new shuffled board using the createBoard() method
 		int[][] shuffledBoard = createBoard(PUZZLE_SIZE, false);
@@ -94,7 +111,7 @@ public class Tabuleiro extends JPanel {
 		// Set the board field of the Tabuleiro class to the new shuffled board
 		setBoard(shuffledBoard);
 	}
-	
+
 	public void solveBoard() {
 		// Create a new shuffled board using the createBoard() method
 		int[][] solvedBoard = createBoard(PUZZLE_SIZE, true);
@@ -102,7 +119,7 @@ public class Tabuleiro extends JPanel {
 		// Set the board field of the Tabuleiro class to the new shuffled board
 		setBoard(solvedBoard);
 	}
-	
+
 	public void switchImage(int newImage) {
 		// Create a new shuffled board using the createBoard() method
 		this.image_selected = Integer.toString(newImage);
@@ -110,7 +127,7 @@ public class Tabuleiro extends JPanel {
 		// Set the board field of the Tabuleiro class to the new shuffled board
 		updateButtons();
 	}
-	
+
 	public void setEnableMovement(boolean test) {
 		this.enableMovement = test;
 	}
@@ -142,19 +159,18 @@ public class Tabuleiro extends JPanel {
 			JButton button = (JButton) e.getSource();
 
 			// try to move the button to the left, right, up, or down
-			
+
 			if (enableMovement) {
 				if (checkWin()) {
 					JOptionPane.showMessageDialog(null, "Parabéns! Você venceu o jogo!");
 					return;
 				}
-				
+
 				tryMove(row, col - 1, button);
 				tryMove(row, col + 1, button);
 				tryMove(row - 1, col, button);
-				tryMove(row + 1, col, button);				
-			}
-			else {
+				tryMove(row + 1, col, button);
+			} else {
 				JOptionPane.showMessageDialog(null, "O jogo está pausado, retome a partida para poder mover as peças!");
 			}
 		}
